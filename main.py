@@ -11,20 +11,26 @@ BAND = (800, 2000)
 
 # SwitchBot API設定
 SWITCHBOT_TOKEN = os.getenv('SWITCHBOT_TOKEN', 'YOUR_TOKEN_HERE')
-SWITCHBOT_DEVICE_ID = os.getenv('SWITCHBOT_DEVICE_ID', 'YOUR_DEVICE_ID_HERE')
+SWITCHBOT_DEVICE_ID_1 = os.getenv('SWITCHBOT_DEVICE_ID_1', 'YOUR_DEVICE_ID_HERE')
+SWITCHBOT_DEVICE_ID_2 = os.getenv('SWITCHBOT_DEVICE_ID_2', 'YOUR_DEVICE_ID_HERE')
 SWITCHBOT_API_BASE = 'https://api.switch-bot.com/v1.0'
 
-sd.default.device = ("USB デバイスが見つからないです", None)
+# オーディオデバイスの設定（デフォルトデバイスを使用）
+# sd.default.device = ("USB デバイスが見つからないです", None)
 
 def pick_working_rate():
+    print("利用可能なオーディオデバイス:")
+    print(sd.query_devices())
+    print("\nデフォルトデバイス:", sd.default.device)
+    
     for r in CANDIDATE_RATES:
         try:
             with sd.InputStream(channels=1, samplerate=r, blocksize=BLOCK, dtype='float32'):
+                print(f"✅ サンプルレート {r}Hz が使用可能です")
                 return r
         except Exception as e:
-            # print(f"rate {r} failed: {e}")
-            pass
-    raise RuntimeError("No supported sample rate found")
+            print(f"⚠️ サンプルレート {r}Hz でエラー: {e}")
+    raise RuntimeError("No supported sample rate found. 利用可能なオーディオデバイスを確認してください。")
 
 RATE = pick_working_rate()
 sd.default.samplerate = RATE
