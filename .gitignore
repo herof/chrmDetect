@@ -3,3 +3,4 @@ run_getDevice.sh
 .venv/
 __pycache__/
 *.pyc
+chem_log.txt
