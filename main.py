@@ -10,7 +10,7 @@ import uuid
 
 CANDIDATE_RATES = [48000, 44100]  # ← この順で試す
 BLOCK = 1024
-DB_THRESH = -25
+DB_THRESH = -100
 BAND = (800, 2000)
 
 # SwitchBot API設定
