@@ -10,10 +10,16 @@ DB_THRESH = -25
 BAND = (800, 2000)
 
 # SwitchBot API設定
-SWITCHBOT_TOKEN = os.getenv('SWITCHBOT_TOKEN', 'YOUR_TOKEN_HERE')
-SWITCHBOT_DEVICE_ID_1 = os.getenv('SWITCHBOT_DEVICE_ID_1', 'YOUR_DEVICE_ID_HERE')
-SWITCHBOT_DEVICE_ID_2 = os.getenv('SWITCHBOT_DEVICE_ID_2', 'YOUR_DEVICE_ID_HERE')
+SWITCHBOT_TOKEN = os.getenv('SWITCHBOT_TOKEN')
+SWITCHBOT_DEVICE_ID_1 = os.getenv('SWITCHBOT_DEVICE_ID_1')
+SWITCHBOT_DEVICE_ID_2 = os.getenv('SWITCHBOT_DEVICE_ID_2')
 SWITCHBOT_API_BASE = 'https://api.switch-bot.com/v1.0'
+
+# 環境変数チェック
+if not SWITCHBOT_TOKEN:
+    print("⚠️ 警告: SWITCHBOT_TOKEN が設定されていません")
+if not SWITCHBOT_DEVICE_ID_1 and not SWITCHBOT_DEVICE_ID_2:
+    print("⚠️ 警告: デバイスIDが設定されていません")
 
 # オーディオデバイスの設定（デフォルトデバイスを使用）
 # sd.default.device = ("USB デバイスが見つからないです", None)
@@ -22,7 +28,7 @@ def pick_working_rate():
     print("利用可能なオーディオデバイス:")
     print(sd.query_devices())
     print("\nデフォルトデバイス:", sd.default.device)
-    
+
     for r in CANDIDATE_RATES:
         try:
             with sd.InputStream(channels=1, samplerate=r, blocksize=BLOCK, dtype='float32'):
@@ -89,8 +95,10 @@ def call_switchbot_api(device_id, command, parameter="default", command_type="co
 def on_chime_detected():
     print("🔔 音を感知しました！！")
     # SwitchBotのスイッチをONにする
-    call_switchbot_api(SWITCHBOT_DEVICE_ID_1, "turnOn")
-    call_switchbot_api(SWITCHBOT_DEVICE_ID_2, "turnOn")
+    if SWITCHBOT_DEVICE_ID_1:
+        call_switchbot_api(SWITCHBOT_DEVICE_ID_1, "turnOn")
+    if SWITCHBOT_DEVICE_ID_2:
+        call_switchbot_api(SWITCHBOT_DEVICE_ID_2, "turnOn")
 
 
 with sd.InputStream(channels=1, samplerate=RATE, blocksize=BLOCK, dtype='float32') as stream:
