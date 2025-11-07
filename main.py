@@ -83,12 +83,12 @@ def call_switchbot_api(device_id, command, parameter="default", command_type="co
         bool: 成功した場合True、失敗した場合False
     """
     url = f"{SWITCHBOT_API_BASE}/devices/{device_id}/commands"
-    
+
     # v1.1認証ヘッダーの生成
     t = str(int(time.time() * 1000))
     nonce = str(uuid.uuid4())
     sign = generate_sign(SWITCHBOT_TOKEN, SWITCHBOT_SECRET, nonce, t)
-    
+
     headers = {
         "Authorization": SWITCHBOT_TOKEN,
         "sign": sign,
@@ -108,7 +108,7 @@ def call_switchbot_api(device_id, command, parameter="default", command_type="co
         print(f"📡 レスポンスステータス: {response.status_code}")
         result = response.json()
         print(f"📄 レスポンス内容: {result}")
-        
+
         response.raise_for_status()
 
         if result.get('statusCode') == 100:
@@ -126,8 +126,8 @@ def on_chime_detected():
     # SwitchBotのスイッチをONにする
     if SWITCHBOT_DEVICE_ID_1:
         call_switchbot_api(SWITCHBOT_DEVICE_ID_1, "turnOn")
-    if SWITCHBOT_DEVICE_ID_2:
         call_switchbot_api(SWITCHBOT_DEVICE_ID_2, "turnOn")
+
 
 
 with sd.InputStream(channels=1, samplerate=RATE, blocksize=BLOCK, dtype='float32') as stream:
