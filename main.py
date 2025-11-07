@@ -10,8 +10,8 @@ import uuid
 
 CANDIDATE_RATES = [48000, 44100]  # ← この順で試す
 BLOCK = 1024
-DB_THRESH = -100
-BAND = (800, 2000)
+DB_THRESH = -15  # 音量の閾値 (値を大きくすると大きな音のみ検知)
+BAND = (800, 2000)  # 検知する周波数帯域 (Hz)
 
 # SwitchBot API設定
 SWITCHBOT_TOKEN = os.getenv('SWITCHBOT_TOKEN')
@@ -138,7 +138,8 @@ with sd.InputStream(channels=1, samplerate=RATE, blocksize=BLOCK, dtype='float32
         x = data[:,0]
         vol = dbfs(x)
         bp = bandpower(x, RATE, *BAND)
-        if vol > DB_THRESH and bp > -20 and cool_down <= 0:
+        if vol > DB_THRESH and bp > -10 and cool_down <= 0:
+            print(f"🔊 音量: {vol:.1f}dB, バンドパワー: {bp:.1f}dB")
             on_chime_detected()
             cool_down = int(RATE / BLOCK * 3)
         cool_down = max(0, cool_down-1)
